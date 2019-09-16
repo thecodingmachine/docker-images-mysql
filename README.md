@@ -8,6 +8,7 @@ This repository contains a set of **developer-friendly** MySQL images for Docker
 
  - Built on top of the official MySQL images
  - You can change any MySQL settings using environment variables
+ - Improved developer experience
  - With native support for backups in S3 / SSH / ... (TODO)
 
 ## Images
