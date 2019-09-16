@@ -1,0 +1,29 @@
+#!/bin/bash
+
+set -e
+# A script to replace mysqld.
+# This is needed because we want to setup the client configuration only AFTER the complete docker entrypoint is run.
+
+if [[ ! "$*" == *"--initialize-insecure"* ]]; then
+  if [[ ! "$*" == *"--verbose --help"* ]]; then
+    if [[ ! "$*" == *"--skip-networking"* ]]; then
+      if [ -n "$MYSQL_ROOT_PASSWORD" ] && [ -z "$CLIENT_INI_PASSWORD" ]; then
+        export CLIENT_INI_USER=root
+        export CLIENT_INI_PASSWORD="$MYSQL_ROOT_PASSWORD"
+      fi
+      if [ -n "$MYSQL_USER" ] && [ -z "$CLIENT_INI_USER" ]; then
+        export CLIENT_INI_USER="$MYSQL_USER"
+      fi
+      if [ -n "$MYSQL_PASSWORD" ] && [ -z "$CLIENT_INI_PASSWORD" ]; then
+        export CLIENT_INI_PASSWORD="$MYSQL_PASSWORD"
+      fi
+      if [ -n "$MYSQL_DATABASE" ] && [ -z "$CLIENT_INI_DATABASE" ]; then
+        export MYSQL_INI_DATABASE="$MYSQL_DATABASE"
+      fi
+
+      php /usr/local/bin/generate_conf.php client > /etc/mysql/conf.d/z_generated_conf_client.cnf
+    fi
+  fi
+fi
+
+exec mysqld_orig "$@"
