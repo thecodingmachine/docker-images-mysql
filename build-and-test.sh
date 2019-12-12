@@ -40,6 +40,10 @@ startMySql -e MYSQLD_INI_MAX_ALLOWED_PACKET=64M
 execSql "SHOW VARIABLES LIKE '%max_allowed_packet%';"  | grep "67108864"
 stopMySql
 
+startMySql -e STARTUP_COMMAND_1='mysql -e "SET GLOBAL sort_buffer_size=123456"'
+execSql "SHOW VARIABLES LIKE '%sort_buffer_size%';"  | grep "123456"
+stopMySql
+
 #startMySql -e MYSQL_INI_MAX_ALLOWED_PACKET=64M
 #execSql "SHOW VARIABLES LIKE '%max_allowed_packet%';"  | grep "67108864"
 #stopMySql
