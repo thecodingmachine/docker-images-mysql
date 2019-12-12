@@ -19,21 +19,21 @@ function stopMySql() {
 
 # Executes SQL (wait for MySQL if not available)
 function execSql() {
-  set +e
-  local OUTPUT
-  # Wait for port 3307 to be opened
-  while ! OUTPUT=$(docker exec tcm_mysql_test mysql -uroot -pfoo -e "$1") ; do
-    sleep 1 # wait for 1 second before check again
-    # is container still there?
-    docker ps | grep tcm_mysql_test
-    if [[ $? != 0 ]]; then
-      set -e;
-      echo "Container closed unexpectedly";
-      exit 1;
+  set +x
+  for i in {30..0}; do
+    if docker exec tcm_mysql_test mysql -e "SELECT 1" &> /dev/null; then
+      break
     fi
+    echo 'MySQL init process in progress...'
+    sleep 1
   done
-  set -e
-  echo $OUTPUT
+  if [ "$i" = 0 ]; then
+    echo >&2 'MySQL init process failed.'
+    exit 1
+  fi
+  set -x
+
+  docker exec tcm_mysql_test mysql -e "$1";
 }
 
 startMySql -e MYSQLD_INI_MAX_ALLOWED_PACKET=64M
