@@ -10,6 +10,7 @@ $commands = array_filter($_SERVER, function(string $key) {
 
 ksort($commands);
 
+echo "#!/bin/bash\n";
 echo "set -e\n";
 
 
