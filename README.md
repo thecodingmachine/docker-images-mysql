@@ -15,8 +15,8 @@ This repository contains a set of **developer-friendly** MySQL images for Docker
 
 
 
-| Name                                                                    | MySQL version                  | type |variant | NodeJS version  | Size 
-|-------------------------------------------------------------------------|------------------------------|------|--------|-----------------|------
+| Name                                                                    | MySQL version                |  Size 
+|-------------------------------------------------------------------------|------------------------------|------
 | [thecodingmachine/mysql:5.7-v1](https://github.com/thecodingmachine/docker-images-mysql/blob/master/Dockerfile)             | `5.7.x` | [![](https://images.microbadger.com/badges/image/thecodingmachine/mysql:5.7-v1.svg)](https://microbadger.com/images/thecodingmachine/mysql:5.7-v1)
 | [thecodingmachine/mysql:8.0-v1](https://github.com/thecodingmachine/docker-images-mysql/blob/master/Dockerfile)             | `8.0.x` | [![](https://images.microbadger.com/badges/image/thecodingmachine/mysql:8.0-v1.svg)](https://microbadger.com/images/thecodingmachine/mysql:8.0-v1)
 
