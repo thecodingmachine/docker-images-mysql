@@ -8,13 +8,15 @@ docker build -t thecodingmachine/mysql:${MYSQL_VERSION}-v1 --build-arg MYSQL_VER
 ## Post build unit tests
 
 docker stop tcm_mysql_test || true
+docker rm tcm_mysql_test || true
 
 function startMySql() {
-  docker run --rm -d --name=tcm_mysql_test --tmpfs /var/lib/mysql -e MYSQL_ROOT_PASSWORD=foo "$*" thecodingmachine/mysql:${MYSQL_VERSION}-v1
+  docker run -d --name=tcm_mysql_test --tmpfs /var/lib/mysql -e MYSQL_ROOT_PASSWORD=foo "$@" thecodingmachine/mysql:${MYSQL_VERSION}-v1
 }
 
 function stopMySql() {
   docker stop tcm_mysql_test
+  docker rm tcm_mysql_test
 }
 
 # Executes SQL (wait for MySQL if not available)
@@ -23,6 +25,12 @@ function execSql() {
   for i in {30..0}; do
     if docker exec tcm_mysql_test mysql -e "SELECT 1" &> /dev/null; then
       break
+    fi
+    if ! docker ps | grep -q tcm_mysql_test; then
+      echo >&2 'MySQL init process failed.'
+      docker logs tcm_mysql_test
+      docker rm tcm_mysql_test
+      exit 1
     fi
     echo 'MySQL init process in progress...'
     sleep 1
@@ -38,6 +46,22 @@ function execSql() {
 
 startMySql -e MYSQLD_INI_MAX_ALLOWED_PACKET=64M
 execSql "SHOW VARIABLES LIKE '%max_allowed_packet%';"  | grep "67108864"
+stopMySql
+
+startMySql -e MYSQL_USER_FOO=foo -e MYSQL_PASSWORD_FOO=foo -e MYSQL_DATABASE_FOO=foo -e MYSQL_DATABASE_BAR=bar -e MYSQL_DATABASE_BAZ=baz -e MYSQL_USERGRANT_FOO=bar,baz
+# wait for the scripts to be applied and database to go in main mode
+sleep 10;
+execSql "SHOW DATABASES;"  | grep "bar"
+execSql "SHOW DATABASES;"  | grep "baz"
+docker exec tcm_mysql_test mysql -ufoo -pfoo bar -e "SELECT 1"
+docker exec tcm_mysql_test mysql -ufoo -pfoo foo -e "SELECT 1"
+stopMySql
+
+startMySql -e STARTUP_COMMAND_1='mysql -uroot -pfoo -e "CREATE DATABASE IF NOT EXISTS foobar;"'
+# wait for the scripts to be applied and database to go in main mode
+sleep 10;
+execSql "SHOW DATABASES;"
+execSql "SHOW DATABASES;"  | grep "foobar"
 stopMySql
 
 #startMySql -e MYSQL_INI_MAX_ALLOWED_PACKET=64M

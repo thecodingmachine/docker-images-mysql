@@ -73,6 +73,7 @@ RUN if [ -n "$INSTALL_CRON" ]; then \
 
 COPY utils/generate_cron.php /usr/local/bin/generate_cron.php
 COPY utils/startup_commands.php /usr/local/bin/startup_commands.php
+COPY utils/create_databases.php /usr/local/bin/create_databases.php
 COPY utils/tcm-docker-entrypoint.sh /usr/local/bin/tcm-docker-entrypoint.sh
 COPY utils/docker-entrypoint-tiny.sh /usr/local/bin/docker-entrypoint-tiny.sh
 

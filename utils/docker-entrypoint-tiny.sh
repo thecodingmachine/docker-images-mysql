@@ -15,7 +15,9 @@ if [[ -s /tmp/generated_crontab ]]; then
     supercronic /tmp/generated_crontab &
 fi
 
-php /usr/local/bin/startup_commands.php | bash
+php /usr/local/bin/create_databases.php > /docker-entrypoint-initdb.d/001-create_databases.sql
+php /usr/local/bin/startup_commands.php > /docker-entrypoint-initdb.d/999-startup_commands.sh
+chmod +x /docker-entrypoint-initdb.d/999-startup_commands.sh
 
 # Initialize a RAMDRIVE if CI environment variable is set
 #if [[ -n "$CI" ]]; then
