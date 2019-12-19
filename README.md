@@ -13,8 +13,6 @@ This repository contains a set of **developer-friendly** MySQL images for Docker
 
 ## Images
 
-
-
 | Name                                                                    | MySQL version                |  Size 
 |-------------------------------------------------------------------------|------------------------------|------
 | [thecodingmachine/mysql:5.7-v1](https://github.com/thecodingmachine/docker-images-mysql/blob/master/Dockerfile)             | `5.7.x` | [![](https://images.microbadger.com/badges/image/thecodingmachine/mysql:5.7-v1.svg)](https://microbadger.com/images/thecodingmachine/mysql:5.7-v1)
@@ -74,7 +72,7 @@ MYSQLDUMP_INI_ALL__DATABASES          | all-databases (in [mysqldump] section)
 
 ## Better developer experience
 
-Out of the box, the mysql clients are configured to log with the declared user on the declared database.
+Out of the box, the mysql clients are configured to connect with the declared user (`MYSQL_USER`) on the declared database (`MYSQL_DATABASE`).
 
 So, inside the container, no need to type:
 
