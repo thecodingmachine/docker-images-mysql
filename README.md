@@ -122,3 +122,32 @@ In addition, this image adds the ability to create any number of users and any n
   MYSQL_PASSWORD_FOO=foo
   MYSQL_USERGRANT_FOO=baz # gives user "foo" admin access to database "baz"
   ```
+
+## Local dumps
+
+The images are shipped with [Supercronic](https://github.com/aptible/supercronic), a `crontab-compatible job runner, designed specifically to run in containers`.
+
+This tool is very useful for dumping your databases in a scheduled way. For instance, you may configure your MySQL service like this in your Docker Compose stack:
+
+```yaml
+mysql:
+ image: thecodingmachine/mysql:8.0-v1
+ restart: unless-stopped
+ command: --default-authentication-plugin=mysql_native_password
+ environment:
+   # Backups
+   CRON_SCHEDULE_1: "0 3 * * *"
+   CRON_COMMAND_1: "mysqldump -u$MYSQL_USER -p$MYSQL_PASSWORD $MYSQL_DATABASE > /dumps/backup_$$(date +%Y-%m-%d-%H.%M.%S).sql"
+   # MySQL
+   MYSQL_ROOT_PASSWORD: "$MYSQL_ROOT_PASSWORD"
+   MYSQL_DATABASE: "$MYSQL_DATABASE"
+   MYSQL_USER: "$MYSQL_USER"
+   MYSQL_PASSWORD: "$MYSQL_PASSWORD"
+ volumes:
+   - mysql_data:/var/lib/mysql
+   - ./dumps:/dumps:rw
+```
+
+**Note:** the `$MYSQL_*` environment variables should come from a `.env` file in this case.
+
+Using this configuration, your database `$MYSQL_DATABASE` will be dumped every day at 3 am (UTC) in your host folder `./dumps`.
