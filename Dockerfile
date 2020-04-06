@@ -67,8 +67,8 @@ RUN SUPERCRONIC_URL=https://github.com/aptible/supercronic/releases/download/v0.
  && curl -fsSLO "$SUPERCRONIC_URL" \
  && echo "${SUPERCRONIC_SHA1SUM}  ${SUPERCRONIC}" | sha1sum -c - \
  && chmod +x "$SUPERCRONIC" \
- && sudo mv "$SUPERCRONIC" "/usr/local/bin/${SUPERCRONIC}" \
- && sudo ln -s "/usr/local/bin/${SUPERCRONIC}" /usr/local/bin/supercronic
+ && mv "$SUPERCRONIC" "/usr/local/bin/${SUPERCRONIC}" \
+ && ln -s "/usr/local/bin/${SUPERCRONIC}" /usr/local/bin/supercronic
 
 COPY utils/generate_cron.php /usr/local/bin/generate_cron.php
 COPY utils/startup_commands.php /usr/local/bin/startup_commands.php
