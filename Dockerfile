@@ -11,7 +11,7 @@ LABEL authors="David Négrier <d.negrier@thecodingmachine.com>"
 # | Installs PHP (for the script handling environment variables)
 # |
 
-RUN apt-get update && apt-get install -y --no-install-recommends php-cli openssh-client
+RUN apt-get update && apt-get install -y --no-install-recommends php-cli openssh-client unzip
 
 COPY utils/generate_conf.php /usr/local/bin/generate_conf.php
 
@@ -79,7 +79,7 @@ RUN SUPERCRONIC_URL=https://github.com/aptible/supercronic/releases/download/v0.
 
 RUN curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip" \
  && unzip awscliv2.zip \
- && sudo ./aws/install \
+ && ./aws/install \
  && rm -rf aws \
  && rm awscliv2.zip
 
