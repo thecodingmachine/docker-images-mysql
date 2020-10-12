@@ -11,7 +11,7 @@ LABEL authors="David Négrier <d.negrier@thecodingmachine.com>"
 # | Installs PHP (for the script handling environment variables)
 # |
 
-RUN apt-get update && apt-get install -y --no-install-recommends php-cli openssh-client
+RUN apt-get update && apt-get install -y --no-install-recommends php-cli openssh-client unzip
 
 COPY utils/generate_conf.php /usr/local/bin/generate_conf.php
 
@@ -48,7 +48,7 @@ RUN { \
 
 # Add Tini (to be able to stop the container with ctrl-c.
 # See: https://github.com/krallin/tini
-ENV TINI_VERSION v0.18.0
+ENV TINI_VERSION v0.19.0
 ADD https://github.com/krallin/tini/releases/download/${TINI_VERSION}/tini /tini
 RUN chmod +x /tini
 
@@ -69,6 +69,19 @@ RUN SUPERCRONIC_URL=https://github.com/aptible/supercronic/releases/download/v0.
  && chmod +x "$SUPERCRONIC" \
  && mv "$SUPERCRONIC" "/usr/local/bin/${SUPERCRONIC}" \
  && ln -s "/usr/local/bin/${SUPERCRONIC}" /usr/local/bin/supercronic
+
+# |--------------------------------------------------------------------------
+# | AWS CLI
+# |--------------------------------------------------------------------------
+# |
+# | Useful for S3 uploads of backups
+# |
+
+RUN curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip" \
+ && unzip awscliv2.zip \
+ && ./aws/install \
+ && rm -rf aws \
+ && rm awscliv2.zip
 
 COPY utils/generate_cron.php /usr/local/bin/generate_cron.php
 COPY utils/startup_commands.php /usr/local/bin/startup_commands.php
