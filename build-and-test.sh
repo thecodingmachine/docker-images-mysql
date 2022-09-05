@@ -3,7 +3,7 @@
 set -xe
 
 # Let's build the "slim" image.
-docker build -t thecodingmachine/mysql:${MYSQL_VERSION}-v1 --build-arg MYSQL_VERSION=${MYSQL_VERSION} .
+docker buildx build --platform=linux/amd64 --load -t thecodingmachine/mysql:${MYSQL_VERSION}-v1 --build-arg MYSQL_VERSION=${MYSQL_VERSION} .
 
 ## Post build unit tests
 
@@ -63,6 +63,10 @@ sleep 10;
 execSql "SHOW DATABASES;"
 execSql "SHOW DATABASES;"  | grep "foobar"
 stopMySql
+
+if [[ "$EVENT_NAME" == "push" || "$EVENT_NAME" == "schedule" ]]; then
+  docker buildx build --platform=linux/amd64,linux/arm64 --push -t thecodingmachine/mysql:${MYSQL_VERSION}-v1 --build-arg MYSQL_VERSION=${MYSQL_VERSION} .
+fi
 
 #startMySql -e MYSQL_INI_MAX_ALLOWED_PACKET=64M
 #execSql "SHOW VARIABLES LIKE '%max_allowed_packet%';"  | grep "67108864"
