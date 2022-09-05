@@ -1,5 +1,5 @@
 ARG MYSQL_VERSION
-FROM mysql:${MYSQL_VERSION}
+FROM mysql:${MYSQL_VERSION}-debian
 
 LABEL authors="David Négrier <d.negrier@thecodingmachine.com>"
 

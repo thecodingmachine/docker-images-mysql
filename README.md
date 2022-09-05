@@ -151,3 +151,21 @@ mysql:
 **Note:** the `$MYSQL_*` environment variables should come from a `.env` file in this case.
 
 Using this configuration, your database `$MYSQL_DATABASE` will be dumped every day at 3 am (UTC) in your host folder `./dumps`.
+
+## Storing dumps in Amazon S3 or a S3 compatible file system
+
+The image comes with AWS CLI installed. This lets you upload images to Amazon S3 (or a compatible system like Google buckets).
+
+In order to connect to S3, the easiest way is to set up these environment variables:
+
+```
+AWS_ACCESS_KEY_ID=[your key]
+AWS_SECRET_ACCESS_KEY=[your secret]
+AWS_DEFAULT_REGION=eu-west-1
+```
+
+Then, setting up a backup is as easy as:
+
+```bash
+aws s3 /dumps/backup.sql S3://my-s3-bucket/backup.sql
+```
