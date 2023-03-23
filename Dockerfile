@@ -11,7 +11,7 @@ LABEL authors="David Négrier <d.negrier@thecodingmachine.com>"
 # | Installs PHP (for the script handling environment variables)
 # |
 
-RUN apt-get update && apt-get install -y --no-install-recommends php-cli openssh-client unzip
+RUN apt-get update && apt-get install -y --no-install-recommends php-cli openssh-client unzip netcat
 
 COPY utils/generate_conf.php /usr/local/bin/generate_conf.php
 
@@ -93,6 +93,8 @@ RUN mv /usr/sbin/mysqld /usr/sbin/mysqld_orig
 COPY utils/mysqld /usr/sbin/mysqld
 
 RUN touch /var/lib/mysql/you_forgot_to_mount_var_lib_mysql
+
+HEALTHCHECK --interval=10s CMD ["nc", "-z", "localhost", "3306"]
 
 # TODO: even with tini, we cannot kill the process with ctrl-c!
 ENTRYPOINT ["/tini", "-g", "-s", "--", "/usr/local/bin/docker-entrypoint-tiny.sh"]
