@@ -3,7 +3,7 @@
 set -xe
 
 # Let's build the "slim" image.
-docker buildx build --platform=linux/amd64 --load -t thecodingmachine/mysql:${MYSQL_VERSION}-v1 --build-arg MYSQL_VERSION=${MYSQL_VERSION} .
+docker buildx build --platform=linux/amd64 --load -t thecodingmachine/mysql:${MYSQL_VERSION}-v2 --build-arg MYSQL_VERSION=${MYSQL_VERSION} .
 
 ## Post build unit tests
 
@@ -11,7 +11,7 @@ docker stop tcm_mysql_test || true
 docker rm tcm_mysql_test || true
 
 function startMySql() {
-  docker run -d --name=tcm_mysql_test --tmpfs /var/lib/mysql -e MYSQL_ROOT_PASSWORD=foo "$@" thecodingmachine/mysql:${MYSQL_VERSION}-v1
+  docker run -d --name=tcm_mysql_test --tmpfs /var/lib/mysql -e MYSQL_ROOT_PASSWORD=foo "$@" thecodingmachine/mysql:${MYSQL_VERSION}-v2
 }
 
 function stopMySql() {
@@ -61,13 +61,12 @@ startMySql -e STARTUP_COMMAND_1='mysql -uroot -pfoo -e "CREATE DATABASE IF NOT E
 # wait for the scripts to be applied and database to go in main mode
 sleep 10;
 execSql "SHOW DATABASES;"
+docker logs tcm_mysql_test
 execSql "SHOW DATABASES;"  | grep "foobar"
 stopMySql
 
 if [[ "$EVENT_NAME" == "push" || "$EVENT_NAME" == "schedule" ]]; then
-  # Disabling ARM64 build because not available in Debian
-  #docker buildx build --platform=linux/amd64,linux/arm64 --push -t thecodingmachine/mysql:${MYSQL_VERSION}-v1 --build-arg MYSQL_VERSION=${MYSQL_VERSION} .
-  docker buildx build --platform=linux/amd64 --push -t thecodingmachine/mysql:${MYSQL_VERSION}-v1 --build-arg MYSQL_VERSION=${MYSQL_VERSION} .
+  docker buildx build --platform=linux/amd64,linux/arm64 --push -t thecodingmachine/mysql:${MYSQL_VERSION}-v2 --build-arg MYSQL_VERSION=${MYSQL_VERSION} .
 fi
 
 #startMySql -e MYSQL_INI_MAX_ALLOWED_PACKET=64M
