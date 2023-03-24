@@ -92,9 +92,9 @@ COPY utils/docker-entrypoint-tiny.sh /usr/local/bin/docker-entrypoint-tiny.sh
 RUN mv /usr/sbin/mysqld /usr/sbin/mysqld_orig
 COPY utils/mysqld /usr/sbin/mysqld
 
-RUN touch /var/lib/mysql/you_forgot_to_mount_var_lib_mysql
+#RUN touch /var/lib/mysql/you_forgot_to_mount_var_lib_mysql
 
-HEALTHCHECK --interval=10s --retries=12 CMD ["nc", "-z", "localhost", "3306"]
+HEALTHCHECK --interval=10s --retries=12 CMD ["mysqladmin", "ping"]
 
 # TODO: even with tini, we cannot kill the process with ctrl-c!
 ENTRYPOINT ["/tini", "-g", "-s", "--", "/usr/local/bin/docker-entrypoint-tiny.sh"]
