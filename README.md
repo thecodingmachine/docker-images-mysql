@@ -1,7 +1,5 @@
 [![Build Status](https://travis-ci.org/thecodingmachine/docker-images-mysql.svg?branch=master)](https://travis-ci.org/thecodingmachine/docker-images-mysql)
 
-# WORK IN PROGRESS - NOT READY FOR USE YET
-
 # Highly configurable MySQL images for Docker
 
 This repository contains a set of **developer-friendly** MySQL images for Docker.
@@ -13,10 +11,12 @@ This repository contains a set of **developer-friendly** MySQL images for Docker
 
 ## Images
 
-| Name                                                                    | MySQL version                |  Size 
-|-------------------------------------------------------------------------|------------------------------|------
-| [thecodingmachine/mysql:5.7-v1](https://github.com/thecodingmachine/docker-images-mysql/blob/master/Dockerfile)             | `5.7.x` | [![](https://images.microbadger.com/badges/image/thecodingmachine/mysql:5.7-v1.svg)](https://microbadger.com/images/thecodingmachine/mysql:5.7-v1)
-| [thecodingmachine/mysql:8.0-v1](https://github.com/thecodingmachine/docker-images-mysql/blob/master/Dockerfile)             | `8.0.x` | [![](https://images.microbadger.com/badges/image/thecodingmachine/mysql:8.0-v1.svg)](https://microbadger.com/images/thecodingmachine/mysql:8.0-v1)
+| Name                                                                                                            | MySQL version | Base distribution | Architectures 
+|-----------------------------------------------------------------------------------------------------------------|---------------|-------------------|----------------
+| [thecodingmachine/mysql:5.7-v2](https://github.com/thecodingmachine/docker-images-mysql/blob/master/Dockerfile) | `5.7.x`       | Oracle Linux      | AMD64 / ARM64 
+| [thecodingmachine/mysql:8.0-v2](https://github.com/thecodingmachine/docker-images-mysql/blob/master/Dockerfile) | `8.0.x`       | Oracle Linux      | AMD64 / ARM64
+| [thecodingmachine/mysql:5.7-v1](https://github.com/thecodingmachine/docker-images-mysql/blob/master/Dockerfile) | `5.7.x`       | Debian Linux      | AMD64
+| [thecodingmachine/mysql:8.0-v1](https://github.com/thecodingmachine/docker-images-mysql/blob/master/Dockerfile) | `8.0.x`       | Debian Linux      | AMD64
 
 Note: we do not tag patch releases of MySQL, only minor versions. You will find one image for MySQL 5.7, one for MySQL 8.0, 
 but no tagged image for MySQL 5.7.12. This is because we believe you have no valid reason to ask explicitly for 5.7.12.

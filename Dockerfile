@@ -1,5 +1,5 @@
 ARG MYSQL_VERSION
-FROM mysql:${MYSQL_VERSION}-debian
+FROM mysql:${MYSQL_VERSION}-oracle
 
 LABEL authors="David Négrier <d.negrier@thecodingmachine.com>"
 
@@ -11,7 +11,26 @@ LABEL authors="David Négrier <d.negrier@thecodingmachine.com>"
 # | Installs PHP (for the script handling environment variables)
 # |
 
-RUN apt-get update && apt-get install -y --no-install-recommends php-cli openssh-client unzip netcat
+# MySQL 5.7 is using Oracle Linux 7 that uses yum.
+# MySQL 8.0 is using Oracle Linux 8 that uses microdnf.
+RUN if command -v yum &> /dev/null; then \
+      yum install -y https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm \
+      && yum install -y https://rpms.remirepo.net/enterprise/remi-release-7.rpm \
+      && yum -y install openssh-client unzip netcat tini yum-utils  \
+      && yum install -y --enablerepo=remi-php80 php-cli \
+      && yum -y clean all  \
+      && rm -rf /var/cache;  \
+    fi \
+ && if command -v microdnf &> /dev/null; then  \
+    microdnf install -y dnf \
+    && dnf install -y https://dl.fedoraproject.org/pub/epel/epel-release-latest-8.noarch.rpm \
+    && dnf install -y https://rpms.remirepo.net/enterprise/remi-release-8.rpm \
+    && microdnf --refresh update -y  \
+    && microdnf module enable php:remi-8.0 -y  \
+    && microdnf --nodocs --setopt=install_weak_deps=0 install -y php-cli openssh-clients unzip nc  \
+    && microdnf -y clean all  \
+    && rm -rf /var/cache; \
+  fi
 
 COPY utils/generate_conf.php /usr/local/bin/generate_conf.php
 
@@ -48,9 +67,11 @@ RUN { \
 
 # Add Tini (to be able to stop the container with ctrl-c.
 # See: https://github.com/krallin/tini
-ENV TINI_VERSION v0.19.0
-ADD https://github.com/krallin/tini/releases/download/${TINI_VERSION}/tini /tini
-RUN chmod +x /tini
+#ENV TINI_VERSION v0.19.0
+#RUN if [ "$(arch)" = "x86_64" ]; then architecture="amd64"; fi \
+# && if [ "$(arch)" = "arm64" ]; then architecture="arm64"; fi \
+# && curl https://github.com/krallin/tini/releases/download/${TINI_VERSION}/tini-${architecture} -o /tini
+#RUN chmod +x /tini
 
 # |--------------------------------------------------------------------------
 # | Supercronic
@@ -59,13 +80,11 @@ RUN chmod +x /tini
 # | Supercronic is a drop-in replacement for cron (for containers).
 # |
 
-RUN SUPERCRONIC_URL=https://github.com/aptible/supercronic/releases/download/v0.1.9/supercronic-linux-amd64 \
- && SUPERCRONIC=supercronic-linux-amd64 \
- && SUPERCRONIC_SHA1SUM=5ddf8ea26b56d4a7ff6faecdd8966610d5cb9d85 \
- && apt-get update \
- && apt-get install -y --no-install-recommends ca-certificates curl \
+RUN if [ "$(arch)" = "x86_64" ]; then architecture="amd64"; fi \
+ && if [ "$(arch)" = "arm64" ]; then architecture="arm64"; fi \
+ && SUPERCRONIC_URL=https://github.com/aptible/supercronic/releases/download/v0.1.12/supercronic-linux-${architecture} \
+ && SUPERCRONIC=supercronic-linux-${architecture} \
  && curl -fsSLO "$SUPERCRONIC_URL" \
- && echo "${SUPERCRONIC_SHA1SUM}  ${SUPERCRONIC}" | sha1sum -c - \
  && chmod +x "$SUPERCRONIC" \
  && mv "$SUPERCRONIC" "/usr/local/bin/${SUPERCRONIC}" \
  && ln -s "/usr/local/bin/${SUPERCRONIC}" /usr/local/bin/supercronic
@@ -77,7 +96,9 @@ RUN SUPERCRONIC_URL=https://github.com/aptible/supercronic/releases/download/v0.
 # | Useful for S3 uploads of backups
 # |
 
-RUN curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip" \
+RUN if [ "$(arch)" = "x86_64" ]; then architecture="x86_64"; fi \
+ && if [ "$(arch)" = "arm64" ]; then architecture="aarch64"; fi \
+ && curl "https://awscli.amazonaws.com/awscli-exe-linux-${architecture}.zip" -o "awscliv2.zip" \
  && unzip awscliv2.zip \
  && ./aws/install \
  && rm -rf aws \
@@ -97,5 +118,6 @@ COPY utils/mysqld /usr/sbin/mysqld
 HEALTHCHECK --interval=10s --retries=12 CMD ["mysqladmin", "ping"]
 
 # TODO: even with tini, we cannot kill the process with ctrl-c!
-ENTRYPOINT ["/tini", "-g", "-s", "--", "/usr/local/bin/docker-entrypoint-tiny.sh"]
+#ENTRYPOINT ["/tini", "-g", "-s", "--", "/usr/local/bin/docker-entrypoint-tiny.sh"]
+ENTRYPOINT ["/usr/local/bin/docker-entrypoint-tiny.sh"]
 CMD ["mysqld"]
