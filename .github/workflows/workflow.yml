@@ -36,6 +36,8 @@ jobs:
       - name: Build, test and push
         env:
           EVENT_NAME: ${{ github.event_name }}
+          GITHUB_ACTOR: ${{ github.actor }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           MYSQL_VERSION="${{ matrix.mysql_version }}" ./build-and-test.sh
           docker images | grep thecodingmachine/mysql
