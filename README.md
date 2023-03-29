@@ -13,7 +13,7 @@ This repository contains a set of **developer-friendly** MySQL images for Docker
 
 | Name                                                                                                            | MySQL version | Base distribution | Architectures 
 |-----------------------------------------------------------------------------------------------------------------|---------------|-------------------|----------------
-| [thecodingmachine/mysql:5.7-v2](https://github.com/thecodingmachine/docker-images-mysql/blob/master/Dockerfile) | `5.7.x`       | Oracle Linux      | AMD64 / ARM64 
+| [thecodingmachine/mysql:5.7-v2](https://github.com/thecodingmachine/docker-images-mysql/blob/master/Dockerfile) | `5.7.x`       | Oracle Linux      | AMD64
 | [thecodingmachine/mysql:8.0-v2](https://github.com/thecodingmachine/docker-images-mysql/blob/master/Dockerfile) | `8.0.x`       | Oracle Linux      | AMD64 / ARM64
 | [thecodingmachine/mysql:5.7-v1](https://github.com/thecodingmachine/docker-images-mysql/blob/master/Dockerfile) | `5.7.x`       | Debian Linux      | AMD64
 | [thecodingmachine/mysql:8.0-v1](https://github.com/thecodingmachine/docker-images-mysql/blob/master/Dockerfile) | `8.0.x`       | Debian Linux      | AMD64

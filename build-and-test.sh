@@ -66,9 +66,14 @@ execSql "SHOW DATABASES;"  | grep "foobar"
 stopMySql
 
 if [[ "$EVENT_NAME" == "push" || "$EVENT_NAME" == "schedule" ]]; then
-  docker buildx build --platform=linux/amd64,linux/arm64 --push -t thecodingmachine/mysql:${MYSQL_VERSION}-v2 --build-arg MYSQL_VERSION=${MYSQL_VERSION} .
+  if [[ "$MYSQL_VERSION" = "5.7" ]]; then
+    PLATFORMS="linux/amd64,linux/arm64";
+  else
+    PLATFORMS="linux/amd64";
+  fi
+  docker buildx build --platform=${PLATFORMS} --push -t thecodingmachine/mysql:${MYSQL_VERSION}-v2 --build-arg MYSQL_VERSION=${MYSQL_VERSION} .
   docker login ghcr.io --username ${GITHUB_ACTOR} --password ${GITHUB_TOKEN}
-  docker buildx build --platform=linux/amd64,linux/arm64 --push -t ghcr.io/thecodingmachine/mysql:${MYSQL_VERSION}-v2 --build-arg MYSQL_VERSION=${MYSQL_VERSION} .
+  docker buildx build --platform=${PLATFORMS} --push -t ghcr.io/thecodingmachine/mysql:${MYSQL_VERSION}-v2 --build-arg MYSQL_VERSION=${MYSQL_VERSION} .
 fi
 
 #startMySql -e MYSQL_INI_MAX_ALLOWED_PACKET=64M
