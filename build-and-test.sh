@@ -67,9 +67,9 @@ stopMySql
 
 if [[ "$EVENT_NAME" == "push" || "$EVENT_NAME" == "schedule" ]]; then
   if [[ "$MYSQL_VERSION" = "5.7" ]]; then
-    PLATFORMS="linux/amd64,linux/arm64";
-  else
     PLATFORMS="linux/amd64";
+  else
+    PLATFORMS="linux/amd64,linux/arm64";
   fi
   docker buildx build --platform=${PLATFORMS} --push -t thecodingmachine/mysql:${MYSQL_VERSION}-v2 --build-arg MYSQL_VERSION=${MYSQL_VERSION} .
   docker login ghcr.io --username ${GITHUB_ACTOR} --password ${GITHUB_TOKEN}
