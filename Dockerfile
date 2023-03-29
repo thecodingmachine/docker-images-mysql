@@ -22,12 +22,7 @@ RUN if command -v yum &> /dev/null; then \
       && rm -rf /var/cache;  \
     fi \
  && if command -v microdnf &> /dev/null; then  \
-    microdnf install -y dnf \
-    && dnf install -y https://dl.fedoraproject.org/pub/epel/epel-release-latest-8.noarch.rpm \
-    && dnf install -y https://rpms.remirepo.net/enterprise/remi-release-8.rpm \
-    && microdnf --refresh update -y  \
-    && microdnf module enable php:remi-8.0 -y  \
-    && microdnf --nodocs --setopt=install_weak_deps=0 install -y php-cli openssh-clients unzip nc  \
+    microdnf --nodocs --setopt=install_weak_deps=0 install -y php-cli openssh-clients unzip nc  \
     && microdnf -y clean all  \
     && rm -rf /var/cache; \
   fi
