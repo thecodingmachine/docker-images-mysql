@@ -76,7 +76,7 @@ RUN { \
 # |
 
 RUN if [ "$(arch)" = "x86_64" ]; then architecture="amd64"; fi \
- && if [ "$(arch)" = "arm64" ]; then architecture="arm64"; fi \
+ && if [ "$(arch)" = "aarch64" ]; then architecture="arm64"; fi \
  && SUPERCRONIC_URL=https://github.com/aptible/supercronic/releases/download/v0.1.12/supercronic-linux-${architecture} \
  && SUPERCRONIC=supercronic-linux-${architecture} \
  && curl -fsSLO "$SUPERCRONIC_URL" \
@@ -91,9 +91,7 @@ RUN if [ "$(arch)" = "x86_64" ]; then architecture="amd64"; fi \
 # | Useful for S3 uploads of backups
 # |
 
-RUN if [ "$(arch)" = "x86_64" ]; then architecture="x86_64"; fi \
- && if [ "$(arch)" = "arm64" ]; then architecture="aarch64"; fi \
- && curl "https://awscli.amazonaws.com/awscli-exe-linux-${architecture}.zip" -o "awscliv2.zip" \
+RUN curl "https://awscli.amazonaws.com/awscli-exe-linux-$(arch).zip" -o "awscliv2.zip" \
  && unzip awscliv2.zip \
  && ./aws/install \
  && rm -rf aws \
